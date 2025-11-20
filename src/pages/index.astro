@@ -1,16 +1,22 @@
 ---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import UploadCard from "../components/UploadCard.astro";
+import { getFormattedCommitLabel, getRepoUrl } from "../lib/metadata";
 
+const footerCommit = getFormattedCommitLabel();
+const canonicalUrl = getRepoUrl();
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout
+    title="Juicebox — Temporary File Uploads"
+    description="Juicebox is a temporary file upload service with rich visual feedback and retention controls."
+    canonical={canonicalUrl}
+    bodyClass="upload-page"
+>
+    <main transition:animate="slide">
+        <UploadCard
+            footerCommit={footerCommit}
+            footerRepoUrl={canonicalUrl}
+        />
+    </main>
+</BaseLayout>

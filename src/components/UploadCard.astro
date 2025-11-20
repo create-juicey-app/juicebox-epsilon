@@ -1,0 +1,212 @@
+---
+import UploadHeader from "./UploadHeader.astro";
+import { RetentionToolbar } from "./islands/RetentionToolbar";
+import { DropZone } from "./islands/DropZone";
+import { FileList } from "./islands/FileList";
+import { ActionsGrid } from "./islands/ActionsGrid";
+import UploadFooter from "./UploadFooter.astro";
+import { getRepoUrl } from "../lib/metadata";
+
+interface UploadCardProps {
+    id?: string;
+    title?: string;
+    subtitle?: string;
+    footerCommit?: string;
+    footerMessage?: string;
+    footerRepoUrl?: string;
+    footerLinks?: {
+        label: string;
+        href: string;
+        external?: boolean;
+        ariaLabel?: string;
+    }[];
+    retentionLabel?: string;
+    retentionOptions?: string[];
+    retentionDefaultIndex?: number;
+    retentionValuePrefix?: string;
+    dropPrimaryText?: string;
+    dropSecondaryText?: string;
+    dropMetaText?: string;
+    dropAccept?: string;
+    dropMultiple?: boolean;
+    actions?: {
+        id?: string;
+        label: string;
+        icon?: "files" | "report" | "more" | string;
+        description?: string;
+        ariaLabel?: string;
+        disabled?: boolean;
+    }[];
+    autoScroll?: boolean;
+    simulateUploads?: boolean;
+    chunkRange?: [number, number];
+}
+
+const moreActionsOptions = [
+    { value: "share", label: "Share" },
+    { value: "delete", label: "Delete" },
+];
+
+const {
+    id,
+    title = "Juicebox",
+    subtitle = "Click, Upload, Share!",
+    footerCommit = "main@a3f8c2d",
+    footerMessage = "juicebox2-epsilon",
+    footerRepoUrl = getRepoUrl(),
+    footerLinks = [],
+    retentionLabel = "Retention",
+    retentionOptions,
+    retentionDefaultIndex,
+    retentionValuePrefix = "",
+    dropPrimaryText,
+    dropSecondaryText,
+    dropMetaText,
+    dropAccept,
+    dropMultiple = true,
+    actions = [
+        { id: "files", label: "Files", icon: "files" },
+        { id: "report", label: "Report", icon: "report" },
+        { id: "more", label: "More...", icon: "more", selectOptions: moreActionsOptions },
+    ],
+    autoScroll = true,
+    simulateUploads = true,
+    chunkRange = [40, 80],
+} = Astro.props as UploadCardProps;
+
+const cardId = id ?? `upload-card-${Math.random().toString(36).slice(2, 10)}`;
+const retentionToolbarId = `${cardId}-retention`;
+const dropZoneId = `${cardId}-drop-zone`;
+const fileListId = `${cardId}-file-list`;
+const actionsGridId = `${cardId}-actions`;
+const headerId = `${cardId}-header`;
+---
+
+<div
+    id={cardId}
+    class="upload-card"
+    data-upload-card
+    data-component="upload-card"
+    aria-labelledby={headerId}
+>
+    <UploadHeader id={headerId} title={title} subtitle={subtitle} />
+
+    <RetentionToolbar
+        client:load
+        id={retentionToolbarId}
+        label={retentionLabel}
+        options={retentionOptions}
+        defaultIndex={retentionDefaultIndex}
+        valuePrefix={retentionValuePrefix}
+    />
+
+    <DropZone
+        client:load
+        id={dropZoneId}
+        primaryText={dropPrimaryText}
+        secondaryText={dropSecondaryText}
+        metaText={dropMetaText}
+        accept={dropAccept}
+        multiple={dropMultiple}
+    />
+
+    <FileList
+        client:load
+        id={fileListId}
+        autoScroll={autoScroll}
+        simulateUploads={simulateUploads}
+        chunkRange={chunkRange}
+    />
+
+    <ActionsGrid client:load id={actionsGridId} actions={actions} />
+
+    <UploadFooter
+        commit={footerCommit}
+        message={footerMessage}
+        repoUrl={footerRepoUrl}
+        links={footerLinks}
+    />
+</div>
+
+<script
+    is:inline
+    define:vars={{
+        cardId,
+        retentionToolbarId,
+        dropZoneId,
+        fileListId,
+        actionsGridId,
+    }}
+>
+    (() => {
+        const card = document.getElementById(cardId);
+        if (!card) return;
+
+        const retentionToolbar = document.getElementById(retentionToolbarId);
+        const dropZone = document.getElementById(dropZoneId);
+        const fileList = document.getElementById(fileListId);
+        const actionsGrid = document.getElementById(actionsGridId);
+
+        const emit = (type, detail) =>
+            card.dispatchEvent(
+                new CustomEvent(type, {
+                    bubbles: true,
+                    composed: true,
+                    detail,
+                }),
+            );
+
+        if (retentionToolbar) {
+            retentionToolbar.addEventListener("retention-change", (event) => {
+                emit("upload-retention-change", event.detail ?? {});
+            });
+        }
+
+        if (dropZone) {
+            dropZone.addEventListener("files-added", (event) => {
+                emit("upload-files-added", event.detail ?? { files: [] });
+            });
+        }
+
+        if (fileList) {
+            fileList.addEventListener("file-added", (event) => {
+                emit("upload-file-added", event.detail ?? {});
+            });
+
+            fileList.addEventListener("file-removed", (event) => {
+                emit("upload-file-removed", event.detail ?? {});
+            });
+
+            fileList.addEventListener("file-completed", (event) => {
+                emit("upload-file-completed", event.detail ?? {});
+            });
+        }
+
+        if (actionsGrid) {
+            actionsGrid.addEventListener("action-select", (event) => {
+                emit("upload-action-select", event.detail ?? {});
+            });
+        }
+
+        card.addEventListener("upload-clear-files", () => {
+            if (!fileList) return;
+            fileList.dispatchEvent(
+                new CustomEvent("clear-files", {
+                    bubbles: true,
+                    composed: true,
+                }),
+            );
+        });
+
+        card.addEventListener("upload-remove-file", (event) => {
+            if (!fileList) return;
+            fileList.dispatchEvent(
+                new CustomEvent("remove-file", {
+                    bubbles: true,
+                    composed: true,
+                    detail: event.detail ?? {},
+                }),
+            );
+        });
+    })();
+</script>

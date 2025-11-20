@@ -1,0 +1,124 @@
+---
+import {
+  getFormattedCommitLabel,
+  getProjectStructuredData,
+  getRepoUrl,
+} from "../lib/metadata";
+import { ClientRouter } from "astro:transitions";
+import "../styles/upload.css";
+import "../styles/components.css";
+
+type AttributeValue = string | number | boolean;
+
+interface AdditionalMeta {
+  name?: string;
+  property?: string;
+  content: string;
+}
+
+interface LayoutProps {
+  title?: string;
+  description?: string;
+  canonical?: string;
+  ogImage?: string;
+  lang?: string;
+  viewport?: string;
+  structuredData?: Record<string, unknown>;
+  bodyClass?: string | Array<string | false | null | undefined>;
+  bodyAttributes?: Record<string, AttributeValue>;
+  htmlAttributes?: Record<string, AttributeValue>;
+  meta?: AdditionalMeta[];
+}
+
+const {
+  title,
+  description,
+  canonical,
+  ogImage,
+  lang = "en",
+  viewport = "width=device-width, initial-scale=1",
+  structuredData,
+  bodyClass,
+  bodyAttributes,
+  htmlAttributes,
+  meta,
+} = Astro.props as LayoutProps;
+
+const defaultTitle = "Juicebox — Temporary File Uploads";
+const defaultDescription =
+  "Juicebox is a temporary file upload experience with rich feedback, retention controls, and delightful visuals.";
+
+const resolvedTitle = title?.trim() || defaultTitle;
+const resolvedDescription = description?.trim() || defaultDescription;
+const resolvedCanonical = canonical?.trim() || getRepoUrl();
+const resolvedStructuredData =
+  structuredData && Object.keys(structuredData).length > 0
+    ? structuredData
+    : getProjectStructuredData();
+const resolvedCommitLabel = getFormattedCommitLabel();
+
+const htmlAttributesMerged: Record<string, AttributeValue> = {
+  lang,
+  ...(htmlAttributes ?? {}),
+};
+
+const resolvedBodyClass = Array.isArray(bodyClass)
+  ? bodyClass.filter(Boolean).join(" ")
+  : bodyClass?.toString().trim();
+
+const resolvedBodyAttributes = { ...(bodyAttributes ?? {}) };
+
+const additionalMeta = Array.isArray(meta)
+  ? meta.filter(
+      (entry): entry is AdditionalMeta =>
+        Boolean(entry?.content) && Boolean(entry?.name || entry?.property),
+    )
+  : [];
+---
+
+<html {...htmlAttributesMerged}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content={viewport} />
+    <title>{resolvedTitle}</title>
+    <meta name="description" content={resolvedDescription} />
+    <meta name="x-commit-ref" content={resolvedCommitLabel} />
+    <link rel="canonical" href={resolvedCanonical} />
+    <link rel="icon" href="/favicon.ico" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={resolvedTitle} />
+    <meta property="og:description" content={resolvedDescription} />
+    <meta property="og:url" content={resolvedCanonical} />
+    <meta property="og:site_name" content="Juicebox Epsilon" />
+    {ogImage && <meta property="og:image" content={ogImage} />}
+
+    <meta name="twitter:card" content={ogImage ? "summary_large_image" : "summary"} />
+    <meta name="twitter:title" content={resolvedTitle} />
+    <meta name="twitter:description" content={resolvedDescription} />
+    {ogImage && <meta name="twitter:image" content={ogImage} />}
+
+    {additionalMeta.map((entry) => (
+      <meta
+        name={entry.name}
+        property={entry.property}
+        content={entry.content}
+      />
+    ))}
+
+    <script type="application/ld+json">
+      {JSON.stringify(resolvedStructuredData)}
+    </script>
+
+    <ClientRouter />
+    <slot name="head" />
+  </head>
+
+  <body class={resolvedBodyClass || undefined} {...resolvedBodyAttributes}>
+    <slot name="body-start" />
+
+    <slot />
+
+    <slot name="body-end" />
+  </body>
+</html>

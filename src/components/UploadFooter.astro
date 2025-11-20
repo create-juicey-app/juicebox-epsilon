@@ -1,0 +1,79 @@
+---
+interface FooterLink {
+    label: string;
+    href: string;
+    external?: boolean;
+    ariaLabel?: string;
+}
+
+interface Props {
+    commit?: string;
+    message?: string;
+    showDivider?: boolean;
+    repoUrl?: string;
+    links?: FooterLink[];
+}
+
+const {
+    commit = "main@a3f8c2d",
+    message = "",
+    showDivider = true,
+    repoUrl = "https://github.com/create-juicey-app/juicebox-epsilon",
+    links = [],
+} = Astro.props as Props;
+
+const hasLinks = Array.isArray(links) && links.length > 0;
+const footerClass = [
+    "upload-footer",
+    showDivider ? "upload-footer--with-divider" : null,
+]
+    .filter(Boolean)
+    .join(" ");
+---
+
+<footer class={footerClass} data-upload-footer>
+    <div class="upload-footer__primary">
+        {message && <p class="upload-footer__message">{message}</p>}
+        <a
+            class="upload-footer__commit upload-footer__link"
+            href={repoUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+        >
+            {commit}
+        </a>
+        
+    </div>
+
+    {
+        hasLinks && (
+            <nav
+                class="upload-footer__links"
+                aria-label="Additional footer links"
+            >
+                {links.map((link, index) => {
+                    const target = link.external ? "_blank" : undefined;
+                    const rel = link.external
+                        ? "noopener noreferrer"
+                        : undefined;
+                    return (
+                        <a
+                            
+                            href={link.href}
+                            target={target}
+                            rel={rel}
+                            aria-label={link.ariaLabel ?? link.label}
+                            class="upload-footer__link upload-footer__link--nav"
+                        >
+                            {link.label}
+                        </a>
+                    );
+                })}
+            </nav>
+        )
+    }
+
+    <slot />
+</footer>
+
+
