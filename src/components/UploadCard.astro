@@ -67,9 +67,14 @@ const {
     actions = [
         { id: "files", label: "Files", icon: "files" },
         { id: "report", label: "Report", icon: "report" },
-        { id: "more", label: "More...", icon: "more", selectOptions: moreActionsOptions },
+        {
+            id: "more",
+            label: "More...",
+            icon: "more",
+            selectOptions: moreActionsOptions,
+        },
     ],
-    autoScroll = true,
+    autoScroll = false,
     simulateUploads = true,
     chunkRange = [40, 80],
 } = Astro.props as UploadCardProps;
@@ -128,26 +133,21 @@ const headerId = `${cardId}-header`;
     />
 </div>
 
-<script
-    is:inline
-    define:vars={{
-        cardId,
-        retentionToolbarId,
-        dropZoneId,
-        fileListId,
-        actionsGridId,
-    }}
->
-    (() => {
-        const card = document.getElementById(cardId);
+<script>
+    import { navigate } from "astro:transitions/client";
+
+    document.addEventListener("astro:page-load", () => {
+        const card = document.querySelector("[data-upload-card]");
         if (!card) return;
 
-        const retentionToolbar = document.getElementById(retentionToolbarId);
-        const dropZone = document.getElementById(dropZoneId);
-        const fileList = document.getElementById(fileListId);
-        const actionsGrid = document.getElementById(actionsGridId);
+        const retentionToolbar = card?.querySelector(
+            "[data-retention-toolbar]",
+        );
+        const dropZone = card?.querySelector("[data-drop-zone]");
+        const fileList = card?.querySelector("[data-file-list]");
+        const actionsGrid = card?.querySelector("[data-actions-grid]");
 
-        const emit = (type, detail) =>
+        const emit = (type: string, detail: any) =>
             card.dispatchEvent(
                 new CustomEvent(type, {
                     bubbles: true,
@@ -158,33 +158,51 @@ const headerId = `${cardId}-header`;
 
         if (retentionToolbar) {
             retentionToolbar.addEventListener("retention-change", (event) => {
-                emit("upload-retention-change", event.detail ?? {});
+                emit(
+                    "upload-retention-change",
+                    (event as CustomEvent).detail ?? {},
+                );
             });
         }
 
         if (dropZone) {
             dropZone.addEventListener("files-added", (event) => {
-                emit("upload-files-added", event.detail ?? { files: [] });
+                emit(
+                    "upload-files-added",
+                    (event as CustomEvent).detail ?? { files: [] },
+                );
             });
         }
 
         if (fileList) {
             fileList.addEventListener("file-added", (event) => {
-                emit("upload-file-added", event.detail ?? {});
+                emit("upload-file-added", (event as CustomEvent).detail ?? {});
             });
 
             fileList.addEventListener("file-removed", (event) => {
-                emit("upload-file-removed", event.detail ?? {});
+                emit(
+                    "upload-file-removed",
+                    (event as CustomEvent).detail ?? {},
+                );
             });
 
             fileList.addEventListener("file-completed", (event) => {
-                emit("upload-file-completed", event.detail ?? {});
+                emit(
+                    "upload-file-completed",
+                    (event as CustomEvent).detail ?? {},
+                );
             });
         }
 
         if (actionsGrid) {
             actionsGrid.addEventListener("action-select", (event) => {
-                emit("upload-action-select", event.detail ?? {});
+                const detail = (event as CustomEvent).detail ?? {};
+                emit("upload-action-select", detail);
+
+                // Handle navigation for Files action
+                if (detail.id === "files") {
+                    navigate("/files");
+                }
             });
         }
 
@@ -204,9 +222,9 @@ const headerId = `${cardId}-header`;
                 new CustomEvent("remove-file", {
                     bubbles: true,
                     composed: true,
-                    detail: event.detail ?? {},
+                    detail: (event as CustomEvent).detail ?? {},
                 }),
             );
         });
-    })();
+    });
 </script>

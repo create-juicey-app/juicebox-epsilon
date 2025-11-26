@@ -1,0 +1,142 @@
+---
+import UploadHeader from "./UploadHeader.astro";
+import { UploadedFilesList } from "./islands/UploadedFilesList";
+import { ActionsGrid } from "./islands/ActionsGrid";
+import UploadFooter from "./UploadFooter.astro";
+import { getRepoUrl } from "../lib/metadata";
+
+interface FileItem {
+    id: string;
+    fileName: string;
+    linkServer: string;
+    linkName: string;
+    size: number;
+    uploadDate: string;
+    expiresAt: string;
+}
+
+interface FilesCardProps {
+    id?: string;
+    title?: string;
+    subtitle?: string;
+    footerCommit?: string;
+    footerMessage?: string;
+    footerRepoUrl?: string;
+    footerLinks?: {
+        label: string;
+        href: string;
+        external?: boolean;
+        ariaLabel?: string;
+    }[];
+    files?: FileItem[];
+    emptyMessage?: string;
+    actions?: {
+        id?: string;
+        label: string;
+        icon?: "files" | "report" | "more" | "back" | string;
+        description?: string;
+        ariaLabel?: string;
+        disabled?: boolean;
+    }[];
+}
+
+const {
+    id,
+    title = "Your Files",
+    subtitle = "Manage your uploaded files",
+    footerCommit = "main@a3f8c2d",
+    footerMessage = "juicebox2-epsilon",
+    footerRepoUrl = getRepoUrl(),
+    footerLinks = [],
+    files = [],
+    emptyMessage = "No uploaded files yet.",
+    actions,
+} = Astro.props as FilesCardProps;
+
+const cardId = id ?? `files-card-${Math.random().toString(36).slice(2, 10)}`;
+const filesListId = `${cardId}-files-list`;
+const actionsGridId = `${cardId}-actions`;
+const headerId = `${cardId}-header`;
+---
+
+<div
+    id={cardId}
+    class="upload-card files-card"
+    data-files-card
+    data-component="files-card"
+    aria-labelledby={headerId}
+>
+    <UploadHeader id={headerId} title={title} subtitle={subtitle} />
+
+    <UploadedFilesList
+        client:load
+        id={filesListId}
+        files={files}
+        emptyMessage={emptyMessage}
+    />
+
+    {
+        actions && (
+            <ActionsGrid
+                client:load
+                id={actionsGridId}
+                actions={actions}
+                heading="File actions"
+            />
+        )
+    }
+
+    <UploadFooter
+        commit={footerCommit}
+        message={footerMessage}
+        repoUrl={footerRepoUrl}
+        links={footerLinks}
+    />
+</div>
+
+<script>
+    import { navigate } from "astro:transitions/client";
+
+    document.addEventListener("astro:page-load", () => {
+        const card = document.querySelector("[data-files-card]");
+        if (!card) return;
+
+        const filesList = card?.querySelector("[data-uploaded-files-list]");
+        const actionsGrid = card?.querySelector("[data-actions-grid]");
+
+        const emit = (type, detail) =>
+            card.dispatchEvent(
+                new CustomEvent(type, {
+                    bubbles: true,
+                    composed: true,
+                    detail,
+                }),
+            );
+
+        if (filesList) {
+            filesList.addEventListener("file-copied", (event) => {
+                emit("files-file-copied", event.detail ?? {});
+            });
+
+            filesList.addEventListener("file-edited", (event) => {
+                emit("files-file-edited", event.detail ?? {});
+            });
+
+            filesList.addEventListener("file-deleted", (event) => {
+                emit("files-file-deleted", event.detail ?? {});
+            });
+        }
+
+        if (actionsGrid) {
+            actionsGrid.addEventListener("action-select", (event) => {
+                const detail = event.detail ?? {};
+                emit("files-action-select", detail);
+
+                // Handle navigation for Back action
+                if (detail.id === "back") {
+                    navigate("/");
+                }
+            });
+        }
+    });
+</script>

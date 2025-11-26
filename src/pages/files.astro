@@ -1,0 +1,76 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import FilesCard from "../components/FilesCard.astro";
+import { getFormattedCommitLabel, getRepoUrl } from "../lib/metadata";
+
+const footerCommit = getFormattedCommitLabel();
+const canonicalUrl = getRepoUrl();
+
+// Sample files data - in a real app, this would come from a database/API
+const sampleFiles = [
+    {
+        id: "1",
+        fileName: "project-proposal.pdf",
+        linkServer: Astro.url.origin,
+        linkName: "abc123def",
+        size: 2457600, // 2.4 MB
+        uploadDate: new Date(Date.now() - 3600000).toISOString(), // 1 hour ago
+        expiresAt: new Date(Date.now() + 82800000).toISOString(), // 23 hours from now
+    },
+    {
+        id: "2",
+        fileName: "screenshot.png",
+        linkServer: Astro.url.origin,
+        linkName: "xyz789ghi",
+        size: 1048576, // 1 MB
+        uploadDate: new Date(Date.now() - 7200000).toISOString(), // 2 hours ago
+        expiresAt: new Date(Date.now() + 79200000).toISOString(), // 22 hours from now
+    },
+    {
+        id: "3",
+        fileName: "data-export.csv",
+        linkServer: Astro.url.origin,
+        linkName: "csv456jkl",
+        size: 524288, // 512 KB
+        uploadDate: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
+        expiresAt: new Date(Date.now() + 86400000).toISOString(), // 1 day from now
+    },
+];
+
+const moreActionsOptions = [
+    { value: "share", label: "Share" },
+    { value: "delete", label: "Delete" },
+];
+
+const customActions = [
+    {
+        id: "back",
+        label: "Go Back",
+        icon: "back",
+        ariaLabel: "Go back to upload page",
+    },
+    { id: "report", label: "Report", icon: "report" },
+    {
+        id: "more",
+        label: "More...",
+        icon: "more",
+        selectOptions: moreActionsOptions,
+    },
+];
+---
+
+<BaseLayout
+    title="Files — Juicebox"
+    description="View and manage your uploaded files on Juicebox."
+    canonical={canonicalUrl}
+    bodyClass="files-page"
+>
+    <main transition:name="page-content">
+        <FilesCard
+            footerCommit={footerCommit}
+            footerRepoUrl={canonicalUrl}
+            files={sampleFiles}
+            actions={customActions}
+        />
+    </main>
+</BaseLayout>
