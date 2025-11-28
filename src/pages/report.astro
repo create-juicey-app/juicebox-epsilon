@@ -1,0 +1,44 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import ReportCard from "../components/ReportCard.astro";
+import { getFormattedCommitLabel, getRepoUrl } from "../lib/metadata";
+
+const footerCommit = getFormattedCommitLabel();
+const canonicalUrl = getRepoUrl();
+
+const moreActionsOptions = [
+    { value: "share", label: "Share" },
+    { value: "delete", label: "Delete" },
+];
+
+const customActions = [
+    {
+        id: "back",
+        label: "Go Back",
+        icon: "back",
+        ariaLabel: "Go back to upload page",
+    },
+    { id: "files", label: "Files", icon: "files" },
+    {
+        id: "more",
+        label: "More...",
+        icon: "more",
+        selectOptions: moreActionsOptions,
+    },
+];
+---
+
+<BaseLayout
+    title="Report — Juicebox"
+    description="Report problematic content on Juicebox."
+    canonical={canonicalUrl}
+    bodyClass="report-page"
+>
+    <main transition:name="page-content">
+        <ReportCard
+            footerCommit={footerCommit}
+            footerRepoUrl={canonicalUrl}
+            actions={customActions}
+        />
+    </main>
+</BaseLayout>

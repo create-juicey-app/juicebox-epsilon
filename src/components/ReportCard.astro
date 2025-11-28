@@ -1,0 +1,123 @@
+---
+import UploadHeader from "./UploadHeader.astro";
+import { ReportForm } from "./islands/ReportForm";
+import { ActionsGrid } from "./islands/ActionsGrid";
+import UploadFooter from "./UploadFooter.astro";
+import { getRepoUrl } from "../lib/metadata";
+
+interface ReportCardProps {
+    id?: string;
+    title?: string;
+    subtitle?: string;
+    footerCommit?: string;
+    footerMessage?: string;
+    footerRepoUrl?: string;
+    footerLinks?: {
+        label: string;
+        href: string;
+        external?: boolean;
+        ariaLabel?: string;
+    }[];
+    actions?: {
+        id?: string;
+        label: string;
+        icon?: "files" | "report" | "more" | "back" | string;
+        description?: string;
+        ariaLabel?: string;
+        disabled?: boolean;
+    }[];
+}
+
+const {
+    id,
+    title = "Report Content",
+    subtitle = "Help keep our platform safe",
+    footerCommit = "main@a3f8c2d",
+    footerMessage = "juicebox2-epsilon",
+    footerRepoUrl = getRepoUrl(),
+    footerLinks = [],
+    actions,
+} = Astro.props as ReportCardProps;
+
+const cardId = id ?? `report-card-${Math.random().toString(36).slice(2, 10)}`;
+const reportFormId = `${cardId}-report-form`;
+const actionsGridId = `${cardId}-actions`;
+const headerId = `${cardId}-header`;
+---
+
+<div
+    id={cardId}
+    class="upload-card report-card"
+    data-report-card
+    data-component="report-card"
+    aria-labelledby={headerId}
+>
+    <UploadHeader id={headerId} title={title} subtitle={subtitle} />
+
+    <ReportForm client:load id={reportFormId} />
+
+    {
+        actions && (
+            <ActionsGrid
+                client:load
+                id={actionsGridId}
+                actions={actions}
+                heading="Report actions"
+            />
+        )
+    }
+
+    <UploadFooter
+        commit={footerCommit}
+        message={footerMessage}
+        repoUrl={footerRepoUrl}
+        links={footerLinks}
+    />
+</div>
+
+<script>
+    import { navigate } from "astro:transitions/client";
+
+    document.addEventListener("astro:page-load", () => {
+        const card = document.querySelector("[data-report-card]");
+        if (!card) return;
+
+        const reportForm = card?.querySelector("[data-report-form]");
+        const actionsGrid = card?.querySelector("[data-actions-grid]");
+
+        const emit = (type: string, detail: any) =>
+            card.dispatchEvent(
+                new CustomEvent(type, {
+                    bubbles: true,
+                    composed: true,
+                    detail,
+                }),
+            );
+
+        if (reportForm) {
+            reportForm.addEventListener("report-submit", (event) => {
+                emit("report-submitted", (event as CustomEvent).detail ?? {});
+
+                // Show success message or redirect
+                alert("Thank you for your report. We'll review it shortly.");
+            });
+        }
+
+        if (actionsGrid) {
+            actionsGrid.addEventListener("action-select", (event) => {
+                const detail = (event as CustomEvent).detail ?? {};
+                emit("report-action-select", detail);
+
+                // Handle navigation for Back action
+                if (detail.id === "back") {
+                    navigate("/");
+                }
+
+                // Handle navigation for Files action
+                if (detail.id === "files") {
+                    navigate("/files");
+                }
+            });
+        }
+    });
+</script>
