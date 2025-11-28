@@ -19,6 +19,21 @@ interface ActionsGridProps {
   buttonType?: "button" | "submit" | "reset";
 }
 
+const moreActionsOptions = [
+    { value: "share", label: "Share" },
+    { value: "delete", label: "Delete" },
+    { value: "download", label: "Download" },
+    { value: "rename", label: "Rename" },
+    { value: "duplicate", label: "Duplicate" },
+    { value: "move", label: "Move" },
+    { value: "archive", label: "Archive" },
+    { value: "add-tags", label: "Add Tags" },
+    { value: "details", label: "View Details" },
+    { value: "versions", label: "Check Version History" },
+    { value: "lock", label: "Lock File" },
+    { value: "permissions", label: "Set Permissions" },
+];
+
 const defaultActions: ActionItem[] = [
   { id: "files", label: "Files", icon: "files" },
   { id: "report", label: "Report", icon: "report" },
@@ -149,7 +164,7 @@ export const ActionsGrid: FunctionalComponent<ActionsGridProps> = ({
       {hasCustomContent
         ? children
         : resolvedActions.map((action, index) => {
-            if (action.id === "more" && action.selectOptions) {
+            if (action.id === "more") {
               return (
                 <Select
                   key={action.id ?? index}
@@ -167,7 +182,7 @@ export const ActionsGrid: FunctionalComponent<ActionsGridProps> = ({
                       <span>{action.label}</span>
                     </button>
                   }
-                  options={action.selectOptions}
+                  options={moreActionsOptions}
                   onSelect={(value) =>
                     handleActionClick(
                       { ...action, id: value, label: value },

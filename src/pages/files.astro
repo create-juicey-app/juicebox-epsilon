@@ -37,11 +37,6 @@ const sampleFiles = [
     },
 ];
 
-const moreActionsOptions = [
-    { value: "share", label: "Share" },
-    { value: "delete", label: "Delete" },
-];
-
 const customActions = [
     {
         id: "back",
@@ -54,13 +49,12 @@ const customActions = [
         id: "more",
         label: "More...",
         icon: "more",
-        selectOptions: moreActionsOptions,
     },
 ];
 ---
 
 <BaseLayout
-    title="Files — Juicebox"
+    title="Files - Juicebox"
     description="View and manage your uploaded files on Juicebox."
     canonical={canonicalUrl}
     bodyClass="files-page"

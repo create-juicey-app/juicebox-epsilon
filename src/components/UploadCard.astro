@@ -42,10 +42,7 @@ interface UploadCardProps {
     chunkRange?: [number, number];
 }
 
-const moreActionsOptions = [
-    { value: "share", label: "Share" },
-    { value: "delete", label: "Delete" },
-];
+
 
 const {
     id,
@@ -64,16 +61,7 @@ const {
     dropMetaText,
     dropAccept,
     dropMultiple = true,
-    actions = [
-        { id: "files", label: "Files", icon: "files" },
-        { id: "report", label: "Report", icon: "report" },
-        {
-            id: "more",
-            label: "More...",
-            icon: "more",
-            selectOptions: moreActionsOptions,
-        },
-    ],
+    actions,
     autoScroll = false,
     simulateUploads = true,
     chunkRange = [40, 80],

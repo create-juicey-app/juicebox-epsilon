@@ -145,10 +145,15 @@
     border-bottom-right-radius: 0;
     padding: 0.5rem;
     z-index: 40;
-    animation: raise-up 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    display: flex;
+    flex-direction: column-reverse;
     transition:
         border-radius 0.2s ease,
         transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.select-menu.opening {
+    animation: raise-up 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .select-menu.closing {
@@ -177,6 +182,17 @@
     }
 }
 
+@keyframes slide-up-item {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 .select-menu[data-side="top"] {
     bottom: calc(100% + 0.5rem);
 }
@@ -200,6 +216,22 @@
     color: var(--zinc-200);
     font-size: 0.875rem;
     font-weight: 500;
+    opacity: 0;
+}
+
+.select-wrapper[data-open="true"]:not([data-opening="true"]) .select-option {
+    opacity: 1;
+}
+
+.select-menu.opening .select-option {
+    animation: slide-up-item 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation-delay: calc(50ms + var(--i) * 25ms);
+}
+
+.select-menu.closing .select-option {
+    animation: slide-up-item 0.2s cubic-bezier(0.4, 0, 1, 1) forwards reverse;
+    animation-delay: calc(var(--i) * 15ms);
+    transition: none;
 }
 
 .select-option:hover,

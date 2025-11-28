@@ -38,7 +38,7 @@ export function Select({
       setIsOpening(true);
       setTimeout(() => {
         setIsOpening(false);
-      }, 300);
+      }, 700);
     }
   };
 
@@ -104,16 +104,19 @@ export function Select({
       </div>
       {(isOpen || isClosing) && (
         <div
-          className={`select-menu ${isClosing ? "closing" : ""}`}
+          className={`select-menu ${isOpening ? "opening" : ""} ${
+            isClosing ? "closing" : ""
+          }`}
           role="listbox"
           aria-label="Select options"
           data-hovered={isHovered}
           data-closing={isClosing}
         >
-          {options.map((option) => (
+          {options.map((option, i) => (
             <div
               key={option.value}
               className="select-option"
+              style={{ "--i": i }}
               onClick={() => handleSelect(option.value)}
               role="option"
               aria-selected={false}
