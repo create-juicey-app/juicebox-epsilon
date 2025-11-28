@@ -76,22 +76,22 @@ body {
         transform: translateY(0) scale(1);
     }
 }
-
 .upload-header {
+    margin: 0 0 2rem; 
     text-align: center;
-    margin-bottom: 2rem;
 }
 
 .upload-header h1 {
+    margin: 0 0 0.75rem;
     color: var(--orange-500);
     font-size: 2.25rem;
     font-weight: 700;
-    margin-bottom: 0.75rem;
 }
 
 .upload-header p {
+    margin: 0; 
     color: var(--zinc-300);
-    line-height: 1.5;
+    line-height: 1.25; 
 }
 
 .retention-toolbar {

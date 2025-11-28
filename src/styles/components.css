@@ -137,7 +137,7 @@
     bottom: 100%;
     left: 0;
     right: 0;
-    width: 100%;
+    width: 100%; 
     background-color: var(--zinc-800);
     border: 1px solid var(--zinc-700);
     border-radius: 0.75rem;
@@ -157,7 +157,7 @@
 }
 
 .select-menu.closing {
-    animation: lower-down 0.35s cubic-bezier(0.4, 0, 1, 1) forwards;
+    animation: lower-down 0.15s cubic-bezier(0.4, 0, 1, 1) forwards;
 }
 
 @keyframes raise-up {
@@ -260,60 +260,194 @@
     flex-grow: 1;
 }
 
-/* Keep button on top whenever menu is visible (including during closing) */
-.select-wrapper[data-open="true"] .action-btn {
-    z-index: 50;
+.select-option--divider {
+    height: 1px;
+    background-color: var(--zinc-700);
+    margin: 0.5rem -0.5rem;
+}
+
+.toggle-switch {
     position: relative;
+    display: inline-block;
+    width: 38px;
+    height: 22px;
+    flex-shrink: 0;
 }
 
-/* Dynamic border-radius when select is open/opening (not closing) */
-.select-wrapper[data-open="true"]:not([data-closing="true"]) .action-btn {
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
+.toggle-switch-checkbox {
+    opacity: 0;
+    width: 0;
+    height: 0;
 }
 
-/* Hover state sync - when button is hovered during open state, lift both menu and button */
-.select-wrapper[data-open="true"][data-hovered="true"]:not(
-        [data-closing="true"]
-    )
+.toggle-switch-track {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--zinc-900);
+    transition: 0.2s;
+    border-radius: 22px;
+}
+
+.toggle-switch-thumb {
+    position: absolute;
+    height: 16px;
+    width: 16px;
+    left: 3px;
+    bottom: 3px;
+    background-color: var(--zinc-100);
+    transition: 0.2s;
+    border-radius: 50%;
+}
+
+.toggle-switch-checkbox:checked + .toggle-switch-track {
+    background-color: var(--orange-500);
+}
+
+.toggle-switch-checkbox:checked + .toggle-switch-track .toggle-switch-thumb {
+    transform: translateX(16px);
+}
+
+/* Keep button on top whenever menu is visible (including during closing)
+   Only for larger screens to avoid z-fighting on small screens (mobile) */
+@media (min-width: 641px) {
+    .select-wrapper[data-open="true"] .action-btn {
+        z-index: 50;
+        position: relative;
+    }
+
+    /* Dynamic border-radius when select is open/opening (not closing) */
+    .select-wrapper[data-open="true"]:not([data-closing="true"]) .action-btn {
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+    }
+}
+
+/* Mobile-specific fix: turn select menu into a bottom-sheet overlay
+   (prevents z-fighting with surrounding content) */
+@media (max-width: 640px) {
+    .select-wrapper {
+        /* make wrapper occupy natural space - the menu will be fixed */
+        position: static;
+    }
+
+    /* Make the select menu a full-width sheet on mobile, stuck to bottom */
     .select-menu {
-    transform: translateY(-2px);
-    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        max-height: calc(60vh - env(safe-area-inset-bottom));
+        overflow: auto;
+        background-color: var(--zinc-800);
+        border-radius: 0.75rem 0.75rem 0 0; /* only top-left/top-right rounded */
+        border: 1px solid var(--zinc-700);
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+        padding: 0.5rem;
+        padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));
+        z-index: 99999; /* high z-index ensures it's above everything */
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.6);
+        transform-origin: bottom center;
+        -webkit-overflow-scrolling: touch;
+        /* default transform for open state */
+        transform: translateY(0);
+    }
 
-.select-wrapper[data-open="true"][data-hovered="true"]:not(
-        [data-closing="true"]
-    )
-    .action-btn {
-    transform: translateY(-2px);
-    transition:
-        transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-        background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-        border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-        color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-        border-radius 0.2s ease;
-}
+    /* Drag handle at the top of the sheet */
+    .select-drag-handle {
+        width: 36px;
+        height: 4px;
+        border-radius: 4px;
+        background: rgba(255,255,255,0.12);
+        margin: 0.6rem auto;
+        display: block;
+        cursor: grab;
+        touch-action: none; /* prevent double-touch gestures while dragging */
+    }
 
-/* Remove hover lift when not hovered but still open */
-.select-wrapper[data-open="true"]:not([data-hovered="true"]):not(
-        [data-closing="true"]
-    )
+    .select-drag-handle:active {
+        cursor: grabbing;
+    }
+
+    /* Option animations adapted for mobile bottom sheet */
+    .select-menu.opening {
+        animation: sheet-in 260ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .select-menu.closing {
+        animation: sheet-out 220ms cubic-bezier(0.4, 0, 1, 1) forwards;
+    }
+
+    @keyframes sheet-in {
+        from {
+            opacity: 0;
+            transform: translateY(100%);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes sheet-out {
+        from {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        to {
+            opacity: 0;
+            transform: translateY(100%);
+        }
+    }
+
+    /* adjust item entry when sheet is opening/closing */
+    .select-menu.opening .select-option {
+        animation: slide-up-item 0.26s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        animation-delay: calc(40ms + var(--i) * 16ms);
+    }
+    .select-menu.closing .select-option {
+        animation: slide-up-item 0.18s cubic-bezier(0.4, 0, 1, 1) forwards reverse;
+        animation-delay: calc(var(--i) * 12ms);
+    }
+
+    /* Overlay for mobile sheet */
+    .select-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 99998;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(3px);
+        pointer-events: auto;
+        transition: opacity 0.18s ease, backdrop-filter 0.18s ease;
+        opacity: 1;
+        touch-action: none;
+        overscroll-behavior: none;
+    }
+
+    .select-overlay[data-closing="true"],
+    .select-overlay.closing {
+        opacity: 0;
+        backdrop-filter: blur(1px);
+    }
+
     .select-menu {
-    transform: translateY(0);
-    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 99999; /* ensure menu stays above the overlay */
+    }
 }
 
-.select-wrapper[data-open="true"]:not([data-hovered="true"]):not(
-        [data-closing="true"]
-    )
-    .action-btn {
-    transform: translateY(0);
-    transition:
-        transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-        background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-        border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-        color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-        border-radius 0.2s ease;
+/* Prevent scroll when the mobile overlay is visible */
+html.no-scroll,
+body.no-scroll {
+    height: 100%;
+    overflow: hidden;
+    -webkit-overflow-scrolling: auto; /* disable momentum scroll on iOS */
 }
 
 /* UploadedFilesList */

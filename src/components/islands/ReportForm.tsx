@@ -126,24 +126,6 @@ export const ReportForm: FunctionalComponent<ReportFormProps> = ({
     >
       <div class="report-form-content">
         <div class="report-form-header">
-          <div class="report-icon-wrapper">
-            <svg
-              class="report-icon"
-              xmlns="http://www.w3.org/2000/svg"
-              width="32"
-              height="32"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              aria-hidden="true"
-            >
-              <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
-              <line x1="4" y1="22" x2="4" y2="15"></line>
-            </svg>
-          </div>
           <h2 id={`${componentId}-title`} class="report-form-title">
             Report a File
           </h2>
@@ -202,9 +184,7 @@ export const ReportForm: FunctionalComponent<ReportFormProps> = ({
               id={`${componentId}-reason`}
               class="form-select"
               value={reason}
-              onChange={(e) =>
-                setReason((e.target as HTMLSelectElement).value)
-              }
+              onChange={(e) => setReason((e.target as HTMLSelectElement).value)}
               required
               disabled={isSubmitting}
             >
@@ -236,14 +216,6 @@ export const ReportForm: FunctionalComponent<ReportFormProps> = ({
 
           <div class="report-form-actions">
             <button
-              type="button"
-              class="report-btn report-btn--secondary"
-              onClick={handleCancel}
-              disabled={isSubmitting}
-            >
-              Cancel
-            </button>
-            <button
               type="submit"
               class="report-btn report-btn--primary"
               disabled={isSubmitting}
@@ -262,8 +234,8 @@ export const ReportForm: FunctionalComponent<ReportFormProps> = ({
 
         <div class="report-form-footer">
           <p class="report-footer-text">
-            Reports are reviewed by our team. False reports may result in
-            account restrictions.
+            Reports are reviewed by our team. False reports may result in IP
+            blocking.
           </p>
         </div>
       </div>
