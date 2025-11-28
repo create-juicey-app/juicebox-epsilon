@@ -104,7 +104,7 @@ const headerId = `${cardId}-header`;
         const filesList = card?.querySelector("[data-uploaded-files-list]");
         const actionsGrid = card?.querySelector("[data-actions-grid]");
 
-        const emit = (type, detail) =>
+        const emit = (type: string, detail: any) =>
             card.dispatchEvent(
                 new CustomEvent(type, {
                     bubbles: true,
@@ -115,26 +115,36 @@ const headerId = `${cardId}-header`;
 
         if (filesList) {
             filesList.addEventListener("file-copied", (event) => {
-                emit("files-file-copied", event.detail ?? {});
+                emit("files-file-copied", (event as CustomEvent).detail ?? {});
             });
 
             filesList.addEventListener("file-edited", (event) => {
-                emit("files-file-edited", event.detail ?? {});
+                emit("files-file-edited", (event as CustomEvent).detail ?? {});
             });
 
             filesList.addEventListener("file-deleted", (event) => {
-                emit("files-file-deleted", event.detail ?? {});
+                emit("files-file-deleted", (event as CustomEvent).detail ?? {});
             });
         }
 
         if (actionsGrid) {
             actionsGrid.addEventListener("action-select", (event) => {
-                const detail = event.detail ?? {};
+                const detail = (event as CustomEvent).detail ?? {};
                 emit("files-action-select", detail);
 
                 // Handle navigation for Back action
                 if (detail.id === "back") {
                     navigate("/");
+                }
+
+                // Handle navigation for Files action
+                if (detail.id === "files") {
+                    navigate("/files");
+                }
+
+                // Handle navigation for Report action
+                if (detail.id === "report") {
+                    navigate("/report");
                 }
             });
         }

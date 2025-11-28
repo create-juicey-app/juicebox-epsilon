@@ -203,6 +203,11 @@ const headerId = `${cardId}-header`;
                 if (detail.id === "files") {
                     navigate("/files");
                 }
+
+                // Handle navigation for Report action
+                if (detail.id === "report") {
+                    navigate("/report");
+                }
             });
         }
 
