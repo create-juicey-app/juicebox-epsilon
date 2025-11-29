@@ -40,12 +40,12 @@ export function Select({
     update();
 
     // modern addEventListener vs older addListener
-    if ("addEventListener" in m) {
+    if (typeof m.addEventListener === "function") {
       m.addEventListener("change", update);
       return () => m.removeEventListener("change", update);
     } else {
-      m.addListener(update as any);
-      return () => m.removeListener(update as any);
+      (m as MediaQueryList).addListener(update);
+      return () => (m as MediaQueryList).removeListener(update);
     }
   }, []);
 
@@ -259,7 +259,7 @@ export function Select({
 
     try {
       // try to release pointer capture if any
-      (ev?.target as Element)?.releasePointerCapture?.(ev?.pointerId);
+      (ev?.target as Element)?.releasePointerCapture?.(ev?.pointerId as number);
     } catch {
       // ignore
     }
@@ -340,71 +340,76 @@ export function Select({
           data-hovered={isHovered}
           data-closing={isClosing}
         >
-          {/* Drag handle - visible on mobile only */}
-          <div
-            className="select-drag-handle"
-            role="presentation"
-            onPointerDown={onDragStart as any}
-          />
-          {options.map((option, i) => {
-            switch (option.type) {
-              case "divider":
-                return <div key={i} className="select-option--divider" />;
-              case "toggle":
-                return (
-                  <label
-                    key={option.value}
-                    className="select-option"
-                    style={{ "--i": i }}
-                    onClick={(e) => e.preventDefault()}
-                  >
-                    {option.icon && (
-                      <span className="select-option__icon">
-                        {option.icon}
+          {isMobile && (
+            /* Drag handle - visible on mobile only */
+            <div className="select-drag-area" onPointerDown={onDragStart as any}>
+              <div
+                className="select-drag-handle"
+                role="presentation"
+              />
+            </div>
+          )}
+          <div className="select-options-list">
+            {options.map((option, i) => {
+              switch (option.type) {
+                case "divider":
+                  return <div key={i} className="select-option--divider" />;
+                case "toggle":
+                  return (
+                    <label
+                      key={option.value}
+                      className="select-option"
+                      style={{ "--i": i }}
+                      onClick={(e) => e.preventDefault()}
+                    >
+                      {option.icon && (
+                        <span className="select-option__icon">
+                          {option.icon}
+                        </span>
+                      )}
+                      <span className="select-option__label">
+                        {option.label}
                       </span>
-                    )}
-                    <span className="select-option__label">
-                      {option.label}
-                    </span>
-                    <div className="toggle-switch">
-                      <input
-                        type="checkbox"
-                        checked={option.checked}
-                        onChange={() => handleSelect(option)}
-                        className="toggle-switch-checkbox"
-                      />
-                      <div className="toggle-switch-track">
-                        <div className="toggle-switch-thumb" />
+                      <div className="toggle-switch">
+                        <input
+                          type="checkbox"
+                          checked={option.checked}
+                          onChange={() => handleSelect(option)}
+                          className="toggle-switch-checkbox"
+                        />
+                        <div className="toggle-switch-track">
+                          <div className="toggle-switch-thumb" />
+                        </div>
                       </div>
+                    </label>
+                  );
+                default:
+                  return (
+                    <div
+                      key={option.value}
+                      className="select-option"
+                      style={{ "--i": i }}
+                      onClick={() => handleSelect(option)}
+                      role="option"
+                      aria-selected={false}
+                      tabIndex={0}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          handleSelect(option);
+                        }
+                      }}
+                    >
+                      {option.icon && (
+                        <span className="select-option__icon">
+                          {option.icon}
+                        </span>
+                      )}
+                      <span className="select-option__label">{option.label}</span>
                     </div>
-                  </label>
-                );
-              default:
-                return (
-                  <div
-                    key={option.value}
-                    className="select-option"
-                    style={{ "--i": i }}
-                    onClick={() => handleSelect(option)}
-                    role="option"
-                    aria-selected={false}
-                    tabIndex={0}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" || e.key === " ") {
-                        handleSelect(option);
-                      }
-                    }}
-                  >
-                    {option.icon && (
-                      <span className="select-option__icon">
-                        {option.icon}
-                      </span>
-                    )}
-                    <span className="select-option__label">{option.label}</span>
-                  </div>
-                );
-            }
-          })}
+                  );
+              }
+            })}
+          </div>
         </div>
       )}
     </div>

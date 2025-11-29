@@ -115,10 +115,12 @@ const additionalMeta = Array.isArray(meta)
   </head>
 
   <body class={resolvedBodyClass || undefined} {...resolvedBodyAttributes}>
-    <slot name="body-start" />
+    <div class="content">
+        <slot name="body-start" />
 
-    <slot />
+        <slot />
 
-    <slot name="body-end" />
+        <slot name="body-end" />
+    </div>
   </body>
 </html>

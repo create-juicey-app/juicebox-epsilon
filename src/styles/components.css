@@ -5,6 +5,19 @@
     gap: 0.75rem;
 }
 
+/* Page content container: center with sensible max width */
+:root {
+    --container-max-width: 1200px;
+}
+
+.content {
+    width: 100%;
+    max-width: var(--container-max-width);
+    margin: 0 auto;
+    padding: 0 1rem;
+    box-sizing: border-box;
+}
+
 /* UploadHeader */
 @keyframes fade-in-up {
     from {
@@ -341,15 +354,12 @@
         right: 0;
         bottom: 0;
         width: 100%;
-        max-height: calc(60vh - env(safe-area-inset-bottom));
-        overflow: auto;
+        
         background-color: var(--zinc-800);
         border-radius: 0.75rem 0.75rem 0 0; /* only top-left/top-right rounded */
         border: 1px solid var(--zinc-700);
         border-bottom-left-radius: 0;
         border-bottom-right-radius: 0;
-        padding: 0.5rem;
-        padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));
         z-index: 99999; /* high z-index ensures it's above everything */
         display: flex;
         flex-direction: column;
@@ -358,23 +368,39 @@
         -webkit-overflow-scrolling: touch;
         /* default transform for open state */
         transform: translateY(0);
+        box-sizing: border-box; /* Ensure padding is included in width */
+    }
+
+    /* Inner container for options that handles scrolling */
+    .select-options-list {
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        padding: 0 0.5rem calc(0.5rem + env(safe-area-inset-bottom));
+        flex-shrink: 1; /* Allow list to shrink if content exceeds max-height */
+    }
+
+    /* Wrapper for drag handle to increase grabbable area */
+    .select-drag-area {
+        padding: 0.6rem 0.5rem; /* Add horizontal padding */
+        cursor: grab;
+        touch-action: none; /* prevent double-touch gestures while dragging */
+    }
+
+    .select-drag-area:active {
+        cursor: grabbing;
     }
 
     /* Drag handle at the top of the sheet */
     .select-drag-handle {
         width: 36px;
         height: 4px;
+        display: block;
         border-radius: 4px;
         background: rgba(255,255,255,0.12);
-        margin: 0.6rem auto;
-        display: block;
-        cursor: grab;
-        touch-action: none; /* prevent double-touch gestures while dragging */
+        margin: 0 auto;
     }
 
-    .select-drag-handle:active {
-        cursor: grabbing;
-    }
+    /* Ensure the drag handle itself doesn't interfere with the menu's drag */
 
     /* Option animations adapted for mobile bottom sheet */
     .select-menu.opening {
@@ -453,7 +479,7 @@ body.no-scroll {
 /* UploadedFilesList */
 .uploaded-files-list {
     position: relative;
-    background-color: var(--zinc-900);
+    background-color: transparent;
     border: 1px solid var(--zinc-800);
     border-radius: 1rem;
     padding: 1.5rem;
@@ -503,7 +529,7 @@ body.no-scroll {
 }
 
 .file-card {
-    background-color: var(--zinc-800);
+    background-color: rgba(var(--zinc-800-rgb), 0.5);
     border: 1px solid var(--zinc-700);
     border-radius: 0.75rem;
     padding: 1rem;
@@ -1002,8 +1028,11 @@ body.no-scroll {
 
     .upload-page main,
     .files-page main {
-        max-width: 100%;
+        width: 100%;
+        max-width: var(--container-max-width);
         overflow-x: hidden;
+        margin: 0 auto;
+        padding: 0 1rem;
     }
 
     .upload-header,
@@ -1019,7 +1048,7 @@ body.no-scroll {
 /* ReportForm */
 .report-form-container {
     position: relative;
-    background-color: var(--zinc-900);
+    background-color: rgba(var(--zinc-900-rgb), 0.8);
     border: 1px solid var(--zinc-800);
     border-radius: 1rem;
     padding: 2rem;
@@ -1229,6 +1258,9 @@ body.no-scroll {
 
 .report-page main {
     width: 100%;
+    max-width: var(--container-max-width);
+    margin: 0 auto;
+    padding: 0 1rem;
 }
 
 .report-card .actions-grid {
