@@ -1,0 +1,49 @@
+/* FilesCard - Inherits styles from upload-card */
+
+.files-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.files-page main {
+    width: 100%;
+}
+
+.files-card .actions-grid {
+    margin-top: 1.5rem;
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 640px) {
+    .files-page {
+        padding: 1rem;
+    }
+
+    .upload-card {
+        padding: 1.5rem;
+        max-width: 100%;
+        box-sizing: border-box;
+        overflow: hidden;
+    }
+
+    .upload-page main,
+    .files-page main {
+        width: 100%;
+        max-width: var(--container-max-width);
+        overflow-x: hidden;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    .upload-header,
+    .retention-toolbar,
+    .drop-zone,
+    .file-list-container,
+    .actions-grid {
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+}

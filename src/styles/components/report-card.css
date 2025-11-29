@@ -1,0 +1,26 @@
+/* ReportCard */
+.report-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.report-page main {
+    width: 100%;
+    max-width: var(--container-max-width);
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.report-card .actions-grid {
+    margin-top: 1.5rem;
+}
+
+/* Mobile Responsive */
+@media (max-width: 640px) {
+    .report-page {
+        padding: 1rem;
+    }
+}
