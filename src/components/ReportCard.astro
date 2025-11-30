@@ -39,7 +39,7 @@ const {
     actions,
 } = Astro.props as ReportCardProps;
 
-const cardId = id ?? `report-card-${Math.random().toString(36).slice(2, 10)}`;
+const cardId = id ?? `ReportCard-${Math.random().toString(36).slice(2, 10)}`;
 const reportFormId = `${cardId}-report-form`;
 const actionsGridId = `${cardId}-actions`;
 const headerId = `${cardId}-header`;

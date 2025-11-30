@@ -6,16 +6,16 @@ import {
 } from "../lib/metadata";
 import { ClientRouter } from "astro:transitions";
 import "../styles/upload.css";
-import "../styles/components/retention-toolbar.css";
-import "../styles/components/page.css";
-import "../styles/components/upload-header.css";
-import "../styles/components/upload-footer.css";
-import "../styles/components/select.css";
-import "../styles/components/uploaded-files-list.css";
-import "../styles/components/edit-file-modal.css";
-import "../styles/components/files-card.css";
-import "../styles/components/report-form.css";
-import "../styles/components/report-card.css";
+import "../styles/components/RetentionToolbar.css";
+import "../styles/components/Page.css";
+import "../styles/components/UploadHeader.css";
+import "../styles/components/UploadFooter.css";
+import "../styles/components/Select.css";
+import "../styles/components/UploadedFilesList.css";
+import "../styles/components/EditFileModal.css";
+import "../styles/components/FilesCard.css";
+import "../styles/components/ReportForm.css";
+import "../styles/components/ReportCard.css";
 
 type AttributeValue = string | number | boolean;
 
@@ -131,5 +131,21 @@ const additionalMeta = Array.isArray(meta)
 
         <slot name="body-end" />
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            let ticking = false;
+            const updateBackground = () => {
+                if (!ticking) {
+                    requestAnimationFrame(() => {
+                        document.body.style.backgroundPositionY = (-window.scrollY * 0.3) + 'px';
+                        ticking = false;
+                    });
+                    ticking = true;
+                }
+            };
+            window.addEventListener('scroll', updateBackground);
+            updateBackground(); // Set initial position
+        });
+    </script>
   </body>
 </html>

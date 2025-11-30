@@ -21,7 +21,7 @@ export const EditFileModal: FunctionalComponent<EditFileModalProps> = ({
   onCancel,
 }) => {
   const componentId =
-    id ?? `edit-file-modal-${Math.random().toString(36).slice(2, 10)}`;
+    id ?? `EditFileModal-${Math.random().toString(36).slice(2, 10)}`;
   const defaultServer =
     typeof window !== "undefined"
       ? window.location.origin

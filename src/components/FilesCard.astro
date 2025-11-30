@@ -53,7 +53,7 @@ const {
     actions,
 } = Astro.props as FilesCardProps;
 
-const cardId = id ?? `files-card-${Math.random().toString(36).slice(2, 10)}`;
+const cardId = id ?? `FilesCard-${Math.random().toString(36).slice(2, 10)}`;
 const filesListId = `${cardId}-files-list`;
 const actionsGridId = `${cardId}-actions`;
 const headerId = `${cardId}-header`;

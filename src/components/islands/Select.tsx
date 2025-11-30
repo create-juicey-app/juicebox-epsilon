@@ -65,12 +65,12 @@ export function Select({
   // helper to close menu with animation
   const closeMenu = () => {
     if (isOpening || isClosing) return;
+    setIsOpen(false);
     setIsClosing(true);
     setIsOpening(false);
     setTimeout(() => {
-      setIsOpen(false);
       setIsClosing(false);
-    }, 350);
+    }, 150);
   };
 
   const handleToggle = () => {
@@ -99,12 +99,12 @@ export function Select({
     }
     onSelect(option.value);
     if (!isClosing) {
+      setIsOpen(false);
       setIsClosing(true);
       setIsOpening(false);
       setTimeout(() => {
-        setIsOpen(false);
         setIsClosing(false);
-      }, 350);
+      }, 150);
     }
   };
 
@@ -152,7 +152,7 @@ export function Select({
   });
 
   // pointer-drag handlers for mobile bottom-sheet
-  const onDragStart = (ev: PointerEvent | PointerEvent & any) => {
+  const onDragStart = (ev: PointerEvent | (PointerEvent & any)) => {
     if (!isMobile) return;
     // only start drag when sheet is open
     if (!isOpen) return;
@@ -224,7 +224,8 @@ export function Select({
       closeMenu();
     } else {
       // Animate back to open position
-      menuRef.current.style.transition = "transform 220ms cubic-bezier(.16,1,.3,1)";
+      menuRef.current.style.transition =
+        "transform 220ms cubic-bezier(.16,1,.3,1)";
       overlayRef.current.style.transition = "opacity 220ms ease";
       menuRef.current.style.transform = "translateY(0)";
       overlayRef.current.style.opacity = "1";
@@ -287,7 +288,7 @@ export function Select({
     <div
       className="select-wrapper"
       ref={wrapperRef}
-      data-open={isOpen || isClosing}
+      data-open={isOpen}
       data-hovered={isHovered}
       data-closing={isClosing}
       data-opening={isOpening}
@@ -301,7 +302,7 @@ export function Select({
         aria-haspopup="listbox"
         aria-expanded={isOpen}
         aria-label={ariaLabel}
-        data-open={isOpen || isClosing}
+        data-open={isOpen}
         data-hovered={isHovered}
         data-closing={isClosing}
         data-opening={isOpening}
@@ -342,11 +343,11 @@ export function Select({
         >
           {isMobile && (
             /* Drag handle - visible on mobile only */
-            <div className="select-drag-area" onPointerDown={onDragStart as any}>
-              <div
-                className="select-drag-handle"
-                role="presentation"
-              />
+            <div
+              className="select-drag-area"
+              onPointerDown={onDragStart as any}
+            >
+              <div className="select-drag-handle" role="presentation" />
             </div>
           )}
           <div className="select-options-list">
@@ -404,7 +405,9 @@ export function Select({
                           {option.icon}
                         </span>
                       )}
-                      <span className="select-option__label">{option.label}</span>
+                      <span className="select-option__label">
+                        {option.label}
+                      </span>
                     </div>
                   );
               }
