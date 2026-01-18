@@ -19,6 +19,8 @@ interface FileItem {
   isComplete: boolean;
   totalChunks: number;
   isExiting?: boolean;
+  link?: string;
+  isCopied?: boolean;
 }
 
 export const FileList: FunctionalComponent<FileListProps> = ({
@@ -50,6 +52,26 @@ export const FileList: FunctionalComponent<FileListProps> = ({
     const min = Math.max(1, chunkRange[0] || 1);
     const max = Math.max(min, chunkRange[1] || min);
     return Math.floor(Math.random() * (max - min + 1)) + min;
+  };
+
+  const copyLink = async (uploadId: string, link: string) => {
+    try {
+      await navigator.clipboard.writeText(link);
+      setFiles((prev) =>
+        prev.map((f) =>
+          f.uploadId === uploadId ? { ...f, isCopied: true } : f,
+        ),
+      );
+      setTimeout(() => {
+        setFiles((prev) =>
+          prev.map((f) =>
+            f.uploadId === uploadId ? { ...f, isCopied: false } : f,
+          ),
+        );
+      }, 2000);
+    } catch (err) {
+      console.error("Failed to copy link", err);
+    }
   };
 
   const removeFile = useCallback((uploadId: string, userInitiated = false) => {
@@ -98,16 +120,21 @@ export const FileList: FunctionalComponent<FileListProps> = ({
             if (f.uploadId !== uploadId) return f;
 
             const isComplete = progressRatio >= 1;
-            if (isComplete) {
-              clearInterval(interval);
-              activeUploads.current.delete(uploadId);
+            let link = f.link;
+            
+            if (isComplete && !link) {
+               clearInterval(interval);
+               activeUploads.current.delete(uploadId);
+               
+               const origin = typeof window !== 'undefined' ? window.location.origin : 'https://juicebox.fyi';
+               link = `${origin}/${uploadId.slice(0, 8)}`;
 
-              if (containerRef.current) {
+               if (containerRef.current) {
                 containerRef.current.dispatchEvent(
                   new CustomEvent("file-completed", {
                     bubbles: true,
                     composed: true,
-                    detail: { uploadId },
+                    detail: { uploadId, link },
                   }),
                 );
               }
@@ -116,10 +143,9 @@ export const FileList: FunctionalComponent<FileListProps> = ({
             return {
               ...f,
               progress: progressRatio * 100,
-              status: isComplete
-                ? "Upload Complete"
-                : `Uploading chunk ${Math.min(currentChunk, totalChunks)}/${totalChunks}`,
+              status: `Uploading chunk ${Math.min(currentChunk, totalChunks)}/${totalChunks}`,
               isComplete,
+              link
             };
           }),
         );
@@ -242,7 +268,7 @@ export const FileList: FunctionalComponent<FileListProps> = ({
         {files.map((file) => (
           <div
             key={file.uploadId}
-            class={`file-item ${file.isExiting ? "exiting" : ""}`}
+            class={`file-item ${file.isExiting ? "exiting" : ""} ${file.isComplete ? "complete" : ""}`}
             data-upload-id={file.uploadId}
             data-file-name={file.name}
             role="listitem"
@@ -276,23 +302,55 @@ export const FileList: FunctionalComponent<FileListProps> = ({
                 </svg>
               </button>
             </div>
-            <div class="progress-track">
-              <div
-                class="progress-fill"
-                style={{ width: `${file.progress}%` }}
-              ></div>
-            </div>
-            <div class="file-status">
-              <div
-                class={`spinner ${file.isComplete ? "done" : ""}`}
-                aria-hidden="true"
-              ></div>
-              <span
-                class="status-text"
-                style={file.isComplete ? { color: "#10b981" } : {}}
+            
+            <div class={`file-action-area ${file.isComplete ? "complete" : ""}`}>
+              <div 
+                class="progress-divider"
+                role="progressbar"
+                aria-valuenow={file.isComplete ? undefined : file.progress}
               >
-                {file.status}
-              </span>
+                <div
+                  class="progress-fill"
+                  style={{ width: `${file.progress}%` }}
+                ></div>
+              </div>
+
+              <button 
+                class={`status-pill ${file.isComplete ? "complete" : ""} ${file.isCopied ? "copied" : ""}`}
+                onClick={(e) => {
+                  if (!file.isComplete) {
+                    e.preventDefault();
+                    return;
+                  }
+                  if (file.link) copyLink(file.uploadId, file.link);
+                }}
+                disabled={!file.isComplete}
+                title={file.isComplete ? "Click to copy link" : undefined}
+                type="button"
+              >
+                <div class="status-content">
+                  <div
+                    class="spinner"
+                    aria-hidden="true"
+                  ></div>
+                  <span
+                    class="status-text"
+                  >
+                    {file.status}
+                  </span>
+                </div>
+
+                <div class="link-content">
+                  <div class="link-text-wrapper">
+                    <span class="copied-text">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="check-icon"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                      Copied!
+                    </span>
+                    <span class="link-url">{file.link}</span>
+                  </div>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="copy-icon"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                </div>
+              </button>
             </div>
           </div>
         ))}

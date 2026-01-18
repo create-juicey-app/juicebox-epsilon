@@ -247,7 +247,7 @@ export const RetentionToolbar: FunctionalComponent<RetentionToolbarProps> = ({
             const offset = 10 - p * 16;
             return (
               <div
-                class="tick"
+                class={`tick ${index === currentIndex ? "active" : ""}`}
                 key={index}
                 style={{ left: `calc(${p * 100}% + ${offset}px)` }}
               />

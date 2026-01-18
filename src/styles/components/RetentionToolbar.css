@@ -1,6 +1,218 @@
 /* RetentionToolbar */
+.retention-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--zinc-900);
+    border: 1px solid var(--zinc-700);
+    border-radius: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    margin-bottom: 1.5rem;
+    gap: 1.5rem;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.retention-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--zinc-400);
+    font-size: 0.875rem;
+    font-weight: 500;
+    white-space: nowrap;
+    flex-shrink: 0;
+    width: 240px;
+}
+
 .retention-label-group {
     display: flex;
     align-items: center;
     gap: 0.75rem;
+}
+
+.retention-label {
+    cursor: pointer;
+    color: var(--zinc-300);
+}
+
+.retention-icon {
+    color: var(--orange-500);
+    width: 1.125rem;
+    height: 1.125rem;
+}
+
+.retention-value-container {
+    width: 120px;
+    height: 1.5em;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+}
+
+.retention-value-wrapper {
+    display: flex;
+    gap: 0.3em;
+    position: absolute;
+    width: 100%;
+    font-family: monospace;
+    font-weight: 600;
+    color: var(--zinc-200);
+}
+
+.retention-number,
+.retention-unit {
+    display: inline-block;
+}
+
+.animate-up-enter {
+    animation: slide-up-enter 0.15s ease-out forwards;
+}
+.animate-down-enter {
+    animation: slide-down-enter 0.15s ease-out forwards;
+}
+
+.animate-up-exit {
+    animation: slide-up-exit 0.15s ease-out forwards;
+}
+.animate-down-exit {
+    animation: slide-down-exit 0.15s ease-out forwards;
+}
+
+@keyframes slide-up-enter {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slide-down-enter {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slide-up-exit {
+    from {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+}
+
+@keyframes slide-down-exit {
+    from {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+}
+
+.slider-wrapper {
+    position: relative;
+    flex-grow: 1;
+    height: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.retention-slider {
+    appearance: none;
+    width: 100%;
+    height: 4px;
+    background: var(--zinc-800);
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+    margin-top: 6px;
+    z-index: 2;
+    touch-action: none;
+}
+
+.retention-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    background: var(--orange-500);
+    border: 2px solid var(--zinc-900);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.2s;
+}
+
+.retention-slider:hover::-webkit-slider-thumb {
+    background: var(--orange-400);
+    transform: scale(1.15);
+}
+
+.retention-slider:active::-webkit-slider-thumb {
+    transform: scale(0.9);
+}
+
+.retention-slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: var(--orange-500);
+    border: 2px solid var(--zinc-900);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.2s;
+}
+
+.retention-slider:hover::-moz-range-thumb {
+    background: var(--orange-400);
+    transform: scale(1.15);
+}
+
+.retention-slider:active::-moz-range-thumb {
+    transform: scale(0.9);
+}
+
+.slider-ticks {
+    position: absolute;
+    top: 18px;
+    left: 0;
+    width: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.tick {
+    position: absolute;
+    width: 2px;
+    height: 4px;
+    background-color: var(--zinc-700);
+    border-radius: 1px;
+    transform: translateX(-50%);
+    transition: background-color 0.3s ease, height 0.3s ease, transform 0.3s ease;
+}
+
+.tick.active {
+    background-color: var(--orange-500);
+    height: 6px;
+    transform: translateX(-50%) scaleY(1.5);
+}
+
+@media (max-width: 640px) {
+    .retention-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+    }
 }
