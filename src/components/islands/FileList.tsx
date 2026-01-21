@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "preact/hooks";
 import type { FunctionalComponent } from "preact";
+import { Check, Copy, X } from "lucide-preact";
 
 interface FileListProps {
   id?: string;
@@ -286,20 +287,7 @@ export const FileList: FunctionalComponent<FileListProps> = ({
                 onClick={() => removeFile(file.uploadId, true)}
                 aria-label={`Remove ${file.name} from queue`}
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <line x1="18" y1="6" x2="6" y2="18"></line>
-                  <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
+                <X size={18} />
               </button>
             </div>
             
@@ -343,12 +331,12 @@ export const FileList: FunctionalComponent<FileListProps> = ({
                 <div class="link-content">
                   <div class="link-text-wrapper">
                     <span class="copied-text">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="check-icon"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                      <Check size={16} class="check-icon" />
                       Copied!
                     </span>
                     <span class="link-url">{file.link}</span>
                   </div>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="copy-icon"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                  <Copy size={16} class="copy-icon" />
                 </div>
               </button>
             </div>

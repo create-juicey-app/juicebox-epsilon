@@ -123,8 +123,8 @@ const additionalMeta = Array.isArray(meta)
     <slot name="head" />
   </head>
 
-  <body class={resolvedBodyClass || undefined} {...resolvedBodyAttributes}>
-    <div class="content">
+  <body class={resolvedBodyClass || undefined} {...resolvedBodyAttributes} transition:animate="none">
+    <div class="content" transition:animate="none">
         <slot name="body-start" />
 
         <slot />

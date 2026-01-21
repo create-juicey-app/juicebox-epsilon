@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "preact/hooks";
 import type { FunctionalComponent } from "preact";
+import { File, Check, Copy, SquarePen, Trash2 } from "lucide-preact";
 import { EditFileModal } from "./EditFileModal";
 
 interface FileItem {
@@ -196,22 +197,7 @@ export const UploadedFilesList: FunctionalComponent<UploadedFilesListProps> = ({
       <div class="uploaded-files-content">
         {files.length === 0 ? (
           <div class="empty-state">
-            <svg
-              class="empty-state-icon"
-              xmlns="http://www.w3.org/2000/svg"
-              width="48"
-              height="48"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              aria-hidden="true"
-            >
-              <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
-              <polyline points="14 2 14 8 20 8"></polyline>
-            </svg>
+            <File class="empty-state-icon" size={48} strokeWidth={1.5} />
             <p class="empty-state-text">{emptyMessage}</p>
           </div>
         ) : (
@@ -225,21 +211,7 @@ export const UploadedFilesList: FunctionalComponent<UploadedFilesListProps> = ({
               >
                 <div class="file-card-header">
                   <div class="file-card-icon">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="20"
-                      height="20"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      aria-hidden="true"
-                    >
-                      <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
-                      <polyline points="14 2 14 8 20 8"></polyline>
-                    </svg>
+                    <File size={20} />
                   </div>
                   <div class="file-card-info">
                     <h3 class="file-card-name" title={file.fileName}>
@@ -268,41 +240,9 @@ export const UploadedFilesList: FunctionalComponent<UploadedFilesListProps> = ({
                     title="Copy link"
                   >
                     {copiedId === file.id ? (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="18"
-                        height="18"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      >
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                      </svg>
+                      <Check size={18} />
                     ) : (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="18"
-                        height="18"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      >
-                        <rect
-                          x="9"
-                          y="9"
-                          width="13"
-                          height="13"
-                          rx="2"
-                          ry="2"
-                        ></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                      </svg>
+                      <Copy size={18} />
                     )}
                   </button>
 
@@ -313,20 +253,7 @@ export const UploadedFilesList: FunctionalComponent<UploadedFilesListProps> = ({
                     aria-label={`Edit ${file.fileName}`}
                     title="Edit"
                   >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="18"
-                      height="18"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    >
-                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                    </svg>
+                    <SquarePen size={18} />
                   </button>
 
                   <button
@@ -336,22 +263,7 @@ export const UploadedFilesList: FunctionalComponent<UploadedFilesListProps> = ({
                     aria-label={`Delete ${file.fileName}`}
                     title="Delete"
                   >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="18"
-                      height="18"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    >
-                      <polyline points="3 6 5 6 21 6"></polyline>
-                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                      <line x1="10" y1="11" x2="10" y2="17"></line>
-                      <line x1="14" y1="11" x2="14" y2="17"></line>
-                    </svg>
+                    <Trash2 size={18} />
                   </button>
                 </div>
               </div>

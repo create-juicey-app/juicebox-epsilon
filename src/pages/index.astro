@@ -13,7 +13,7 @@ const canonicalUrl = getRepoUrl();
     canonical={canonicalUrl}
     bodyClass="upload-page"
 >
-    <main transition:name="page-content">
+    <main transition:animate="none">
         <UploadCard footerCommit={footerCommit} footerRepoUrl={canonicalUrl} />
     </main>
 </BaseLayout>
